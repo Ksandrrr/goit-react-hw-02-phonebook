@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { nanoid } from 'nanoid';
-import ContactForm from './Phonebook/PhonebookForm/PhonebookForm';
-import PhoneList from './Phonebook/PhoneList/PhoneList';
-import Phonebookfilter from './Phonebook/PhonebookFilter/PhonebookFilter';
+import ContactForm from './PhonebookForm/PhonebookForm';
+import PhoneList from './PhoneList/PhoneList';
+import PhoneBookFilter from './PhonebookFilter/PhonebookFilter';
+
 class App extends Component {
   state = {
     contacts: [
@@ -15,6 +16,11 @@ class App extends Component {
   };
 
   onAddContacts = ({ name, number }) => {
+    if (this.isDublicate(name, number)) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+
     this.setState(prevState => {
       const { contacts } = prevState;
       const newContact = {
@@ -47,10 +53,20 @@ class App extends Component {
         number.toLowerCase().includes(normalizedFilter)
       );
     });
-
     return result;
   }
-
+  isDublicate(name, number) {
+    const { contacts } = this.state;
+    const normalizedName = name.toLowerCase();
+    const normalizedPhone = number.toLowerCase();
+    const dublicate = contacts.find(contact => {
+      return (
+        contact.name.toLowerCase() === normalizedName &&
+        contact.number.toLowerCase() === normalizedPhone
+      );
+    });
+    return Boolean(dublicate);
+  }
   delateContacts = id => {
     const updatedContacts = this.state.contacts.filter(
       contact => contact.id !== id
@@ -68,10 +84,11 @@ class App extends Component {
           contacts={this.state.contacts}
         />
         <h2>Contacts</h2>
-        <Phonebookfilter saveFilterValue={this.saveFilterValue} />
+        <PhoneBookFilter saveFilterValue={this.saveFilterValue} Filter={this.state.filter} />
         <PhoneList items={items} delateContacts={this.delateContacts} />
       </section>
     );
   }
 }
+
 export default App;

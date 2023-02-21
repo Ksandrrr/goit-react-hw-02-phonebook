@@ -1,6 +1,6 @@
-import Style from '../../Phonebook.module.css';
+import Style from '../Phonebook.module.css';
 import { Component } from 'react';
-
+import PropTypes from 'prop-types';
 class ContactForm extends Component {
   state = {
     name: ``,
@@ -15,12 +15,7 @@ class ContactForm extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    const { name, number } = this.state;
-    if (this.isDublicate({ name, number })) {
-      const { name } = this.state;
-      alert(`${name} is already in contacts`);
-      return;
-    }
+
 
     const { onAddContacts } = this.props;
     onAddContacts({ ...this.state });
@@ -29,18 +24,7 @@ class ContactForm extends Component {
   reset() {
     this.setState({ name: '', number: '' });
   }
-  isDublicate({ name, number }) {
-    const { contacts } = this.props;
-    const normalizedName = name.toLowerCase();
-    const normalizedPhone = number.toLowerCase();
-    const dublicate = contacts.find(contact => {
-      return (
-        contact.name.toLowerCase() === normalizedName &&
-        contact.number.toLowerCase() === normalizedPhone
-      );
-    });
-    return Boolean(dublicate);
-  }
+
 
   render() {
     const { name, number } = this.state;
@@ -76,5 +60,13 @@ class ContactForm extends Component {
       </form>
     );
   }
+}
+ContactForm.propTypes = {
+  onAddContacts: PropTypes.func.isRequired,
+  contacts: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    number: PropTypes.string,
+  }))
 }
 export default ContactForm;
